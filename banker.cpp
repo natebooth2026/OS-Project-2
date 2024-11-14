@@ -2,8 +2,8 @@
 #include <fstream>
 
 const int NUM_OF_PROCESSES = 5;
-const int NUM_OF_RESOURCES = 3;
-const char FILE_NAME[] = "init.txt";
+const int NUM_OF_RESOURCES = 3; 
+const char FILE_NAME[] = "init.txt"; 
 
 bool fileInput(std::ifstream&,  
                int[NUM_OF_PROCESSES][NUM_OF_RESOURCES], 
@@ -37,7 +37,10 @@ int main(){
             if(safe){
                 std::cout << "System is in a safe state." << std::endl;
                 std::cout << "Safe sequence: ";
-
+                for(int i = 0; i < NUM_OF_PROCESSES; ++i){
+                    std::cout << "P" << sequence[i] << " ";
+                }
+                std::cout << std::endl;
             } else {
                 std::cout << "System is NOT in a safe state." << std::endl;
                 return 0;
@@ -65,8 +68,10 @@ bool isSafe(int alloc[NUM_OF_PROCESSES][NUM_OF_RESOURCES],
     int delayed[NUM_OF_PROCESSES];
     int delayedCounter = 0;
 
+    int successes = 0;
+
     for(int i = 0; i < NUM_OF_PROCESSES; ++i){
-        int successes = 0;
+        successes = 0;
         for(int j = 0; j < NUM_OF_RESOURCES; ++j){
             if(need[i][j] <= available[j]){
                 ++successes;
@@ -77,16 +82,51 @@ bool isSafe(int alloc[NUM_OF_PROCESSES][NUM_OF_RESOURCES],
         if(successes == NUM_OF_RESOURCES){
             sequence[successCounter] = i;
             ++successCounter;
+            for(int j = 0; j < NUM_OF_RESOURCES; ++j) {
+                available[j] += need[i][j];
+            }
         } else {
             delayed[delayedCounter] = i;
             ++delayedCounter;
         }
     }
 
-    if(counter == 0) return false;
-    if(counter == 5) return true;
+    if(successCounter == 0) return false;
+    if(successCounter == NUM_OF_PROCESSES) return true;
 
-    //NEED TO CHECK DELAYED ARRAY AND RUN SIMULATIONS
+    int tracker = 0;
+
+    while(successCounter < NUM_OF_PROCESSES){
+        successes = 0;
+        int processNum = delayed[tracker % NUM_OF_PROCESSES];
+
+        for(int j = 0; j < NUM_OF_RESOURCES; ++j){
+            if(need[processNum][j] <= available[j]){
+                ++successes;
+            } else {
+                break;
+            }
+        }
+        if(successes == NUM_OF_RESOURCES){
+            sequence[successCounter] = processNum;
+            ++successCounter;
+            for(int j = 0; j < NUM_OF_RESOURCES; ++j) {
+                available[j] += need[processNum][j];
+            }
+            ++tracker;
+        } else {
+            ++tracker;
+        }
+    }
+
+    /*
+        NEEDED MODIFICATIONS:
+            1. Set cap on resources
+                Try "allocating" what is needed and then adding back?
+            2. Make sure a failure check in case the process is asking for too much (failure bool array?)
+    */
+
+    return true;
 }
 
 bool fileInput(std::ifstream& in, 
