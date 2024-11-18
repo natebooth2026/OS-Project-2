@@ -69,6 +69,7 @@ bool isSafe(int alloc[NUM_OF_PROCESSES][NUM_OF_RESOURCES],
     for(int i = 0; i < NUM_OF_PROCESSES; ++i) attempts[i] = 0;
     bool finished[NUM_OF_PROCESSES];
     for(int i = 0; i < NUM_OF_PROCESSES; ++i) finished[i] = false;
+
     int tracker = 0;
 
     while(successCounter < NUM_OF_PROCESSES && attempts[tracker % NUM_OF_PROCESSES] < 3){
@@ -104,7 +105,7 @@ bool isSafe(int alloc[NUM_OF_PROCESSES][NUM_OF_RESOURCES],
         if(successCounter == NUM_OF_PROCESSES) return true;
     }
 
-    return true;
+    return false;
 }
 
 bool fileParsed(std::ifstream& in, 
@@ -113,25 +114,32 @@ bool fileParsed(std::ifstream& in,
                int available[NUM_OF_RESOURCES]){
     int semis = 0; //holds number of ';' found
 
-    while(semis < 2){
-        for(int i = 0; i < NUM_OF_PROCESSES; ++i){
-            for(int j = 0; j < NUM_OF_RESOURCES; ++j){
-                if(semis == 0) alloc[i][j] = int(in.get() - '0');
-                if(semis == 1) max[i][j] = int(in.get() - '0');
+    for(int i = 0; i < NUM_OF_PROCESSES; ++i){
+        bool successfulChar = true;
+
+        for(int j = 0; j < NUM_OF_RESOURCES; ++j){
+            if(int(in.peek() - '0') >= 10 || int(in.peek() - '0') < 0){
+                successfulChar = false; 
+                break;
             }
 
-            if(in.peek() == ';'){
-                ++semis;
-                if(semis == 1) i = -1; //resets 'i' for input of max
-                in.get(); //skips ';'
-                in.get(); //skips '\n'
-                in.get(); //skips blank line
-            } else if (in.peek() == '\n'){
-                in.get(); //skips '\n'
-            } else { //error
-                semis = 3;
-                break; 
-            }
+            if(semis == 0) alloc[i][j] = int(in.get() - '0');
+            if(semis == 1) max[i][j] = int(in.get() - '0');
+        }
+
+        if(!successfulChar) return false;
+
+        if(in.peek() == ';'){
+            ++semis;
+            if(semis == 1) i = -1; //resets 'i' for input of max
+            in.get(); //skips ';'
+            in.get(); //skips '\n'
+            in.get(); //skips blank line
+        } else if (in.peek() == '\n'){
+            in.get(); //skips '\n'
+        } else { //error
+            semis = 3;
+            break; 
         }
 
         if(semis == 3) return false;
