@@ -2,10 +2,10 @@
 #include <fstream>
 
 const int NUM_OF_PROCESSES = 5;
-const int NUM_OF_RESOURCES = 3; 
-const char FILE_NAME[] = "init.txt"; 
+const int NUM_OF_RESOURCES = 3;
+const char FILE_NAME[] = "init.txt";
 
-bool fileInput(std::ifstream&,  
+bool fileParsed(std::ifstream&,  
                int[NUM_OF_PROCESSES][NUM_OF_RESOURCES], 
                int[NUM_OF_PROCESSES][NUM_OF_RESOURCES], 
                int[NUM_OF_RESOURCES]);
@@ -25,7 +25,7 @@ int main(){
         int max[NUM_OF_PROCESSES][NUM_OF_RESOURCES];
         int available[NUM_OF_RESOURCES];
         
-        bool success = fileInput(in, alloc, max, available);
+        bool success = fileParsed(in, alloc, max, available);
 
         if(success){
             int sequence[NUM_OF_PROCESSES];
@@ -65,71 +65,49 @@ bool isSafe(int alloc[NUM_OF_PROCESSES][NUM_OF_RESOURCES],
 
     int successCounter = 0;
 
-    int delayed[NUM_OF_PROCESSES];
-    int delayedCounter = 0;
-
-    int successes = 0;
-
-    for(int i = 0; i < NUM_OF_PROCESSES; ++i){
-        successes = 0;
-        for(int j = 0; j < NUM_OF_RESOURCES; ++j){
-            if(need[i][j] <= available[j]){
-                ++successes;
-            } else {
-                break;
-            }
-        }
-        if(successes == NUM_OF_RESOURCES){
-            sequence[successCounter] = i;
-            ++successCounter;
-            for(int j = 0; j < NUM_OF_RESOURCES; ++j) {
-                available[j] += need[i][j];
-            }
-        } else {
-            delayed[delayedCounter] = i;
-            ++delayedCounter;
-        }
-    }
-
-    if(successCounter == 0) return false;
-    if(successCounter == NUM_OF_PROCESSES) return true;
-
+    int attempts[NUM_OF_PROCESSES];
+    for(int i = 0; i < NUM_OF_PROCESSES; ++i) attempts[i] = 0;
+    bool finished[NUM_OF_PROCESSES];
+    for(int i = 0; i < NUM_OF_PROCESSES; ++i) finished[i] = false;
     int tracker = 0;
 
-    while(successCounter < NUM_OF_PROCESSES){
-        successes = 0;
-        int processNum = delayed[tracker % NUM_OF_PROCESSES];
+    while(successCounter < NUM_OF_PROCESSES && attempts[tracker % NUM_OF_PROCESSES] < 3){
+        if(finished[tracker % NUM_OF_PROCESSES]){
+            ++tracker;
+            continue;
+        }
 
+        int successes = 0;
         for(int j = 0; j < NUM_OF_RESOURCES; ++j){
-            if(need[processNum][j] <= available[j]){
+            if(need[tracker % NUM_OF_PROCESSES][j] <= available[j]){
                 ++successes;
             } else {
                 break;
             }
         }
         if(successes == NUM_OF_RESOURCES){
-            sequence[successCounter] = processNum;
-            ++successCounter;
-            for(int j = 0; j < NUM_OF_RESOURCES; ++j) {
-                available[j] += need[processNum][j];
+            sequence[successCounter] = tracker % NUM_OF_PROCESSES;
+             for(int j = 0; j < NUM_OF_RESOURCES; ++j) {
+                available[j] += alloc[tracker % NUM_OF_PROCESSES][j];
             }
+            finished[tracker % NUM_OF_PROCESSES] = true;
+            attempts[tracker % NUM_OF_PROCESSES] = 0;
+            ++successCounter;
             ++tracker;
+           
         } else {
+            ++attempts[tracker % NUM_OF_PROCESSES];
             ++tracker;
         }
-    }
 
-    /*
-        NEEDED MODIFICATIONS:
-            1. Set cap on resources
-                Try "allocating" what is needed and then adding back?
-            2. Make sure a failure check in case the process is asking for too much (failure bool array?)
-    */
+        if(tracker >= NUM_OF_PROCESSES && successCounter == 0) return false;
+        if(successCounter == NUM_OF_PROCESSES) return true;
+    }
 
     return true;
 }
 
-bool fileInput(std::ifstream& in, 
+bool fileParsed(std::ifstream& in, 
                int alloc[NUM_OF_PROCESSES][NUM_OF_RESOURCES], 
                int max[NUM_OF_PROCESSES][NUM_OF_RESOURCES], 
                int available[NUM_OF_RESOURCES]){
