@@ -36,31 +36,30 @@ To experiment with different setups, you must change the values in the varaibles
 
 DO NOT INCLUDE ANY `...` IN YOUR TEXT FILE (please see init.txt for an example of this format). Make sure to recompile (using the provided `g++` line above) if you changed variable values in the code.
 
-## Usage
+## Example Outputs
 This program will print out a statement indicating if the system is in a safe state or not.
 If it is safe, it will print out the sequence denoted `PX` (`X` is the process number). Examples:
 
 Safe System
 
-<img width="167" alt="p2SafeExample" src="https://github.com/user-attachments/assets/3c0a8216-e7e9-4660-bf56-ae3c2d76e5ee">
+<img width="300" alt="p2SafeExample" src="https://github.com/user-attachments/assets/3c0a8216-e7e9-4660-bf56-ae3c2d76e5ee">
 
 
+Unsafe System
 
-Non-Safe System
-
-<img width="167" alt="p2UnsafeExample" src="https://github.com/user-attachments/assets/c7019f92-d6d2-455d-9aab-0285b81c8c44">
-
+<img width="300" alt="p2UnsafeExample" src="https://github.com/user-attachments/assets/c7019f92-d6d2-455d-9aab-0285b81c8c44">
 
 
+### Errors
 Please be careful to make sure the file format and constant variable values (see above) are correct otherwise you may see errors like these:
 
-<img width="110" alt="p2FileOpenError" src="https://github.com/user-attachments/assets/da270db4-787a-45db-9ee1-05ca00048dec">
+<img width="200" alt="p2FileOpenError" src="https://github.com/user-attachments/assets/da270db4-787a-45db-9ee1-05ca00048dec">
 
 
 The file did not open properly.
 
 
-<img width="109" alt="p2FileParseError" src="https://github.com/user-attachments/assets/e37d52e9-178d-43aa-929b-246acf48e78f">
+<img width="200" alt="p2FileParseError" src="https://github.com/user-attachments/assets/e37d52e9-178d-43aa-929b-246acf48e78f">
 
 `fileParsed()` either saw an invalid character, the values of `NUM_OF_PROCESSES` and/or `NUM_OF_RESOURCES` were invalid, or the file was in the wrong format.
 
