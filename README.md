@@ -19,22 +19,24 @@ g++ banker.cpp -o banker
 ```
 To properly run this program, init.txt has been set up to an inital state to be parsed in function `fileParsed()`.
 
-To experiment with different setups, you must change the values in the varaibles `NUM_OF_PROCESSES`, `NUM_OF_RESOURCES`, and `FILE_NAME` if necessary and follow the following format in your text file:
+To experiment with different setups, you must change the values in the varaibles `NUM_OF_PROCESSES`, `NUM_OF_RESOURCES`, and `FILE_NAME` as necessary and follow the following format in your text file:
 ```
-[process 0 allocated row, no spaces and one-digit per resource]
 [process 1 allocated row, no spaces and one-digit per resource]
+[process 2 allocated row, no spaces and one-digit per resource]
 ...
 [process n allocated row, no spaces and one-digit per resource];
 
-[process 0 max row, no spaces and one-digit per resource]
 [process 1 max row, no spaces and one-digit per resource]
+[process 2 max row, no spaces and one-digit per resource]
 ...
 [process n max row, no spaces and one-digit per resource];
 
 [available row for n resources, no space and one-digit per resource];
 ```
 
-DO NOT INCLUDE ANY `...` IN YOUR TEXT FILE (please see init.txt for an example of this format). Make sure to recompile (using the provided `g++` line above) if you changed variable values in the code.
+DO NOT INCLUDE ANY `...` IN YOUR TEXT FILE (please see init.txt & the included test case files for an example of this format). Make sure to recompile (using the provided `g++` line above) if you changed variable values in the code.
+
+(Test cases provided by: https://eaymanelshenawy.wordpress.com/wp-content/uploads/2016/02/exampleofbankeralgorithm1.pdf)
 
 ## Example Outputs
 This program will print out a statement indicating if the system is in a safe state or not.
