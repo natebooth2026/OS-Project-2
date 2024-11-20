@@ -1,0 +1,66 @@
+The file begins with defining variables required for the functions
+fileParsed() and isSafe(). It tells the program how many processes
+to check, how many resources to check, and the file to open for the
+matrix information. The previously-mentioned functions are prototyped
+before main().
+
+In main(), an input file stream opens FILE_NAME and tests if it opened
+or not. If not, it flags an error and quits. If it works, main()
+defines alloc[][], max[][], and available[] which will receive its values
+from fileParsed(). This holds allocation, max, and available information
+(respectively). Then, fileParsed() is run and stores if it worked or not
+in success. If success == false, file parsing error is flagged and the
+program quits. If success == true, sequence[] is defined and initalized
+with -1 for each value and then isSafe() (the algorithm function) is run
+(with the resulting condition being returned to safe, filtering what to be
+printed). The program ends either with a statement saying the system is safe 
+with the appropriate process order (printed "PX" with X as the process num)
+(safe == true) or a statement saying the system is not safe (safe == false). 
+
+In fileParsed(), alloc[][] is filled from the matrix information one digit
+at a time, one row at a time until a semi-colon is found. max[][] is then
+filled in the same way after the first semi-colon. Each is organized by
+process (row) and resource (column). While checking, the function makes
+sure each character being read is valid (0-9 only). A for loop is used to
+read each character (j) and each process at a time (i) with i being reset
+after reading in alloc[][] to read in max[][] (when semis == 1). semis = 3 
+is the error case in case the format is incorrect (semis holding the number 
+of semi-colons). Then available[] is filled, checking for invalid characters 
+like the above for loop. If no error has been flagged, the file parsing error 
+is avoided by returning true.
+
+In isSafe(), need[][] is defined and calcuated for each process by each 
+resource with need[i][j] = max[i][j] - alloc[i][j] in for loops. Then,
+successCounter, attempts[], and finished[] are defined and initalized to
+0 values (false for finished[]) to track the number of processes in the 
+sequence, the attempts that a process uses to try to enter sequence[], 
+and the status of each process being in sequence[] respectively. tracker 
+is then defined to hold the iteration number/process number when modulo'ed 
+by NUM_OF_PROCESSES.
+
+Next, the while loop runs while attempts for the process is < 3 and the
+successCounter is < NUM_OF_PROCESSES (runs until too many attempts of a process
+or if sequence[] is full). The loop first checks if the process is finished,
+which increments tracker and restarts the loop if true. If not, successes is
+defined to hid the number of resources in which available resources can be
+fully allocated to the process. The for loop checks if the current process's
+need at the jth resource is less than or equal to available[j], counting a
+success if true in successes or breaking the loop to flag a failed attempt
+if false. This is done since all needed resources must be allocated at once.
+
+After the for loop, the number of successes is checked for equality to the number 
+of resources. If so, the process is added to the sequence by its number, each 
+resource in the process that has already been allocated is added to available[], 
+finished[] is flagged true at the process, attempts at process num is wiped, and 
+successCounter and tracker is incremented (to move to the next element in sequence[] 
+and to move to the next iteration). If it failed, attempts at the process num is 
+incremented and the while loop is moved to the next process with tracker being 
+incremented.
+
+Lastly, the final checks in the while loop check if all processes have already
+been checked and no process was moved into the sequence, returning false if so.
+The complete opposite case, when successCounter is equal to the size of sequence[],
+which returns true to show that the system is in a safe state. Since sequence[]
+was being filled in during execution, the sequence will then be available for
+printing in main(). If the function exits the while loop, it returns false
+assuming a failure due to too many attempts.
